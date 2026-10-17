@@ -1,0 +1,13 @@
+.DS_Store
+build/
+DerivedData/
+*.xcarchive
+*.ipa
+*.tipa
+NFCVaultDemo/ExportOptions.development.plist
+
+_aemulo_inspect/
+_inspect_trollnfc/
+_src_trollnfc/
+_trollnfc_ios26_patch/
+_verify_trollnfc_ios26_patch/

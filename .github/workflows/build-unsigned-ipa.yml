@@ -1,0 +1,46 @@
+name: Build unsigned IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          xcode-select -p
+
+      - name: Archive without signing
+        run: |
+          mkdir -p build
+          xcodebuild \
+            -project NFCVaultDemo.xcodeproj \
+            -scheme NFCVaultDemo \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/NFCVaultDemo.xcarchive \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            archive
+
+      - name: Package IPA
+        run: |
+          rm -rf build/Payload build/NFCVaultDemo-unsigned.ipa
+          mkdir -p build/Payload
+          cp -R build/NFCVaultDemo.xcarchive/Products/Applications/NFCVaultDemo.app build/Payload/
+          cd build
+          zip -qry NFCVaultDemo-unsigned.ipa Payload
+
+      - name: Upload unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: NFCVaultDemo-unsigned-ipa
+          path: build/NFCVaultDemo-unsigned.ipa
